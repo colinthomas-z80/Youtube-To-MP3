@@ -17,7 +17,9 @@ namespace get_audio
 
             GetAudio("https://www.youtube.com/watch?v=3nINDTxu5eY");
 
-            while (true) ;
+            Console.Write("Enter 'q' to finish");
+            while (Console.ReadLine() != "q") ;
+
         }
 
         static async Task GetAudio(string url)
@@ -42,11 +44,14 @@ namespace get_audio
             // Get file after link is generated with key
 
             WebClient wc = new WebClient();
-
-            wc.DownloadFile(link, "C:\\Users\\Owner\\Downloads\\song.mp3");
             
             
+            await wc.DownloadFileTaskAsync(new Uri(link), "C:\\Users\\Owner\\Downloads\\song.mp3");
 
+            Console.WriteLine("Download Complete");
+
+            
+          
         }
 
         static string GetKey(string url)
