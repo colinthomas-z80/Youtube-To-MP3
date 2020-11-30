@@ -12,6 +12,15 @@ namespace get_audio
     {
         public static async Task<String> ConvertToLink(string url)
         {
+            // this should take care of the videos you have watched part of and contain a timestamp in the url. 
+            // Of course it wouldnt matter if you didn't grab the links from your own account :)
+            if(url.Contains('&'))
+            {
+                int index = url.IndexOf('&');
+                url = url.Substring(0, index);
+                Console.WriteLine("Url Cropped");
+            }
+
             var key = GetKey(url);
 
             HttpClient client = new HttpClient();
@@ -22,11 +31,27 @@ namespace get_audio
 
         }
 
-        public static async Task DownloadFromLink(string downloadLink)
+        public static async Task DownloadFromLink(string downloadLink, string path)
         {
-            WebClient wc = new WebClient();
-            string name = await GetName(downloadLink);
-            await wc.DownloadFileTaskAsync(new Uri(downloadLink), "C:\\Users\\Owner\\Downloads\\" + name);
+            try
+            {
+                WebClient wc = new WebClient();
+                string name = await GetName(downloadLink);
+                string fullname = path + name;
+                wc.DownloadFileAsync(new Uri(downloadLink), fullname);
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("\nMessage ---\n{0}", ex.Message);
+                Console.WriteLine(
+                    "\nHelpLink ---\n{0}", ex.HelpLink);
+                Console.WriteLine("\nSource ---\n{0}", ex.Source);
+                Console.WriteLine(
+                    "\nStackTrace ---\n{0}", ex.StackTrace);
+                Console.WriteLine(
+                    "\nTargetSite ---\n{0}", ex.TargetSite);
+            }
 
             Console.WriteLine("\nDownload Complete");
         }
@@ -46,18 +71,23 @@ namespace get_audio
             int pos = url.IndexOf(pattern);
             string key = url.Substring(pos + pattern.Length);
 
-            // Currently, this will not work on videos that are part of a playlist. Probably due to the parsing on the API end
-            //int index = keyhalf.IndexOf('&');
-            //string key = keyhalf.Substring(0, index);
-
             return key;
         }
 
         private static async Task<string> GetName(string downloadLink)
         {
-            WebResponse nameResponse = await WebRequest.Create(new Uri(downloadLink)).GetResponseAsync();
-            string name = nameResponse.Headers["Content-Disposition"].Substring(nameResponse.Headers["Content-Disposition"].IndexOf("filename") + 9).Replace("\"", "");
+            string name = "defaultName";
+            try
+            {
+                WebResponse nameResponse = await WebRequest.Create(new Uri(downloadLink)).GetResponseAsync();
+                name = nameResponse.Headers["Content-Disposition"].Substring(nameResponse.Headers["Content-Disposition"].IndexOf("filename") + 9).Replace("\"", "");
+                nameResponse.Dispose();
 
+            }
+            catch
+            {
+                Console.WriteLine("Error in GetName");
+            }
             return name;
         }
     }
