@@ -1,10 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Timers;
 
 namespace get_audio
 {
@@ -23,14 +19,13 @@ namespace get_audio
 
         static async Task run()
         {
-            for (int i = 0; i < 11; i++)
+
+            for (int i = 25; i < 36; i++)
             {
                 Console.WriteLine("Calling API...");
                 string link = await YTHelper.ConvertToLink(links[i]);
                 Console.WriteLine(links[i]);
                 await YTHelper.DownloadFromLink(link, Program.path);
-
-                
             }
         }
 

@@ -81,6 +81,7 @@ namespace get_audio
             {
                 WebResponse nameResponse = await WebRequest.Create(new Uri(downloadLink)).GetResponseAsync();
                 name = nameResponse.Headers["Content-Disposition"].Substring(nameResponse.Headers["Content-Disposition"].IndexOf("filename") + 9).Replace("\"", "");
+                Console.WriteLine(name);
                 nameResponse.Dispose();
 
             }
